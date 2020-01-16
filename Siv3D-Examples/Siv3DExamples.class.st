@@ -93,5 +93,6 @@ Siv3DExamples >> exampleKDTreeView [
 								width: 6;
 								yourself ].
 					canvas addAll: lines ] ].
+	canvas camera position: canvas shapes encompassingRectangle center.
 	^ canvas
 ]
