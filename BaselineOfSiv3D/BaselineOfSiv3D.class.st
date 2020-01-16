@@ -9,13 +9,16 @@ BaselineOfSiv3D >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
-		do: [ 
-			spec 
-				baseline: 'PolyMath' 
-				with: [ spec repository: 'github://PolyMathOrg/PolyMath:v1.0.1/src' ].
+		do: [ spec
+				baseline: 'PolyMath'
+				with: [ spec
+						repository: 'github://PolyMathOrg/PolyMath:v1.0.1/src';
+						loads: #('Math-KDTree' 'Math-Numerical') ].
 			spec
 				configuration: 'Roassal2'
-				with: [ spec repository: 'http://smalltalkhub.com/mc/ObjectProfile/Roassal2/main' ].
+				with: [ spec
+						repository: 'http://smalltalkhub.com/mc/ObjectProfile/Roassal2/main';
+						loads: 'Roassal2' ].
 			spec package: 'Siv3D-Model' with: [ spec requires: #('PolyMath') ].
 			spec package: 'Siv3D-Examples' with: [ spec requires: #('Siv3D-Model' 'Roassal2') ].
 			spec group: 'default' with: #('Siv3D-Examples') ]
