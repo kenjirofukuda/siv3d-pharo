@@ -5,76 +5,57 @@ Class {
 }
 
 { #category : #examples }
-Siv3DExamples class >> contentsOfMethod: aSelector [
-	^ (self class >> aSelector) sourceCode lines allButFirst joinUsing: String cr
-
-]
-
-{ #category : #examples }
-Siv3DExamples class >> exampleCursorPoint [
-	GTPlayground
-		openContents: (self contentsOfMethod: #scriptCursorPoint)
-]
-
-{ #category : #examples }
-Siv3DExamples class >> exampleKDTree [
-	"https://scrapbox.io/Siv3D/KDTree"
-	GTPlayground
-		openContents: (self contentsOfMethod: #scriptKDTreeView)
-]
-
-{ #category : #examples }
-Siv3DExamples class >> scriptCursorPoint [
-	| v e |
-	v := RTView new.
-	e := RTEllipse new
-		size: 30;
-		element.
-	v add: e.
+Siv3DExamples >> exampleCursorPoint [
+	<script: 'self new exampleCursorPoint open'>
+	| c e |
+	c := RSCanvas new.
+	e := RSEllipse new
+		draggable;
+		size: 30.
+	c add: e.
 	e model: e.
-	e @ (RTLabeled new text: [ :m | m position ]).
-	e @ RTDraggable.
 	e translateTo: 30 @ 40.
+	e @ (RSLabeled new text: [ :m | m position ]).
 	e
-		when: TRMouseDragging
+		when: RSMouseDragging
 		do: [ :evt | 
 			| rounded |
 			rounded := (e position x round: 3) @ (e position y round: 3).
-			"e position traceCr."
-			(e attributeAt: #RTLabelledLabel) text: rounded printString ].
-	v when: TRMouseMove do: [ :evt | evt position traceCr ].
-	^ v
+			(e attributeAt: #RSLabeled) text: rounded printString ].
+	c when: RSMouseMove do: [ :evt | evt position traceCr ].
+	^ c
 ]
 
 { #category : #examples }
-Siv3DExamples class >> scriptKDTreeView [
-	| v randPoint randRadius randDirection cursorElement ellipses numSample cursorPoint anim tree result |
-	v := RTView new.
-	v canvas color: Color black.
-	randPoint := [ v canvas extent x atRandom
-		@ v canvas extent y atRandom ].
+Siv3DExamples >> exampleKDTreeView [
+	<script: 'self new exampleKDTreeView open'>
+	"CURRENT:  https://scrapbox.io/Siv3D/KDTree"
+	"TODO:     https://siv3d.github.io/reference/kd-tree/"
+	| canvas randPoint randRadius randDirection cursorElement ellipses numSample cursorPoint tree result |
+	canvas := RSCanvas new.
+	canvas canvas color: Color black.
+	randPoint := [ canvas extent x atRandom @ canvas extent y atRandom ].
 	randDirection := [ (PMUniformDistribution
 		from: -10.0 degreesToRadians
 		to: 10.0 degreesToRadians) random ].
 	numSample := 8.
 	randRadius := [ (PMUniformDistribution from: 0.2 to: 1.0) random ].
-	cursorElement := RTEllipse new
+	cursorElement := RSEllipse new
 		size: 25;
 		color: Color transparent;
-		element.
-	v add: cursorElement.
+		yourself.
+	canvas add: cursorElement.
 	ellipses := OrderedCollection new.
-	v when: TRMouseMove do: [ :evt | cursorPoint := evt position ].
+	canvas when: RSMouseMove do: [ :evt | cursorPoint := evt position ].
 	200
-		timesRepeat: [ 
-			| e |
-			e := RTEllipse new
+		timesRepeat: [ | e |
+			e := RSEllipse new
 				size: (6 to: 16) atRandom;
+				draggable;
 				color: Color random;
-				element.
-			e @ RTDraggable.
+				yourself.
 			e translateTo: randPoint value.
-			v add: e.
+			canvas add: e.
 			ellipses add: e.
 			e
 				attributeAt: #direction
@@ -82,12 +63,12 @@ Siv3DExamples class >> scriptKDTreeView [
 					(PMUniformDistribution
 						from: 0.0 degreesToRadians
 						to: 360 degreesToRadians) random ].
-	anim := RTActiveAnimation new.
-	anim intervalInMilliseconds: 1.0 / 60.0 * 1000.
-	anim
-		blockToExecute: [ 
+	canvas newAnimation
+		repeat;
+		delay: (1.0 / 60.0 * 1000) milliSeconds;
+		onStepDo: [ :t | 
 			| lines |
-			v removeAllEdges.
+			canvas edges copy do: #remove.
 			ellipses
 				do: [ :e | 
 					| direction |
@@ -97,19 +78,20 @@ Siv3DExamples class >> scriptKDTreeView [
 					e
 						translateBy: (SivCircular r: randRadius value theta: direction) asPoint ].
 			cursorPoint
-				ifNotNil: [ cursorElement translateTo: cursorPoint.
+				ifNotNil: [ 
+					cursorElement translateTo: cursorPoint.
 					tree := SivKDTree new.
 					tree vectorBlock: [ :e | e position asArray ].
 					tree elements: ellipses.
 					result := tree nnSearch: cursorPoint asArray i: numSample.
-					lines := RTLine edgesFrom: cursorElement toAll: result.
-					lines
-						do: [ :l | 
-							l trachelShape
-								width: 6.0;
-								color: Color white ].
-					v addAll: lines.
-					result traceCr ] ].
-	anim inView: v.
-	^ v
+					lines := result
+						collect: [ :each | 
+							RSLine new
+								from: cursorElement;
+								to: each;
+								color: Color white;
+								width: 6;
+								yourself ].
+					canvas addAll: lines ] ].
+	^ canvas
 ]
