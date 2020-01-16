@@ -18,5 +18,5 @@ BaselineOfSiv3D >> baseline: spec [
 				with: [ spec repository: 'http://smalltalkhub.com/mc/ObjectProfile/Roassal2/main' ].
 			spec package: 'Siv3D-Model' with: [ spec requires: #('PolyMath') ].
 			spec package: 'Siv3D-Examples' with: [ spec requires: #('Siv3D-Model' 'Roassal2') ].
-			spec group: #default with: [ spec requires: #('Siv3D-Examples') ] ]
+			spec group: 'default' with: #('Siv3D-Examples') ]
 ]
