@@ -6,7 +6,7 @@ Class {
 
 { #category : #examples }
 Siv3DExamples >> exampleCursorPoint [
-	<script: 'self new exampleCursorPoint open'>
+	<script: 'self new exampleCursorPoint open setLabel: ''Drag Me'' '>
 	| c e |
 	c := RSCanvas new.
 	e := RSEllipse new
@@ -28,7 +28,7 @@ Siv3DExamples >> exampleCursorPoint [
 
 { #category : #examples }
 Siv3DExamples >> exampleKDTreeView [
-	<script: 'self new exampleKDTreeView open'>
+	<script: 'self new exampleKDTreeView open setLabel: ''KDTree'' '>
 	"CURRENT:  https://scrapbox.io/Siv3D/KDTree"
 	"TODO:     https://siv3d.github.io/reference/kd-tree/"
 	| canvas randPoint randRadius randDirection cursorElement ellipses numSample cursorPoint tree result |
